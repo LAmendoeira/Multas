@@ -20,7 +20,7 @@ namespace Multas.Models
         public string Fotografia { get; set; }
 
         [Required(ErrorMessage = "Indique a que {0} pertence o agente.")]
-        [RegularExpression("[A-Za-z0-9ç -]+", ErrorMessage = "Apenas são aceites caracteres alfanuméricos")]
+        [RegularExpression("[A-Za-z0-9çé -]+", ErrorMessage = "Apenas são aceites caracteres alfanuméricos")]
         public string Esquadra { get; set; }
 
         //Lista de multas associadas
