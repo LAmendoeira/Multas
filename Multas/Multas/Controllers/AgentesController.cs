@@ -54,9 +54,12 @@ namespace Multas.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include = "Nome,Esquadra")] Agentes agente, HttpPostedFileBase carregaFotografia)
         {
+
             //Gerar ID para o novo agente
-            int novoID = 0;
-            novoID = db.Agentes.Max(a => a.ID) + 1;
+            int novoID = 1;
+            if (db.Agentes.Count() != 0)
+                novoID = db.Agentes.Max(a => a.ID) + 1;
+
             agente.ID = novoID;//Atribuir novo ID ao agente
             var filename = "Agente_" + novoID + ".jpg";
             var imagePath = "";
@@ -87,13 +90,21 @@ namespace Multas.Controllers
             if (ModelState.IsValid)
             {
                 db.Agentes.Add(agente);
-                db.SaveChanges();
+                try
+                {
 
-                //Guardar imagem no disco
 
-                carregaFotografia.SaveAs(imagePath);
+                    db.SaveChanges();
 
-                return RedirectToAction("Index");
+                    //Guardar imagem no disco
+
+                    carregaFotografia.SaveAs(imagePath);
+
+                    return RedirectToAction("Index");
+                } catch (Exception)
+                {
+                    ModelState.AddModelError("", "Não foi possivel inserir o Agente " + agente.Nome + ", por favor tente mais tarde ou contacte o Administrador.");
+                }
             }
 
             return View(agente);
