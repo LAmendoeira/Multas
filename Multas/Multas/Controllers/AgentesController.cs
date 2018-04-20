@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Web;
@@ -51,16 +52,51 @@ namespace Multas.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Nome,Fotografia,Esquadra")] Agentes agentes)
+        public ActionResult Create([Bind(Include = "Nome,Esquadra")] Agentes agente, HttpPostedFileBase carregaFotografia)
         {
+            //Gerar ID para o novo agente
+            int novoID = 0;
+            novoID = db.Agentes.Max(a => a.ID) + 1;
+            agente.ID = novoID;//Atribuir novo ID ao agente
+            var filename = "Agente_" + novoID + ".jpg";
+            var imagePath = "";
+
+            //Validar se existe imagem
+            if (carregaFotografia != null)//Existe um ficheiro
+            {
+                agente.Fotografia = filename;
+                imagePath = Path.Combine(Server.MapPath("~/imagens/"), filename);
+            } else
+            {
+                //Gerar uma mensagem de erro para que o utilizador saiba o que se passou para a inserção não ter corrido bem
+                ModelState.AddModelError("", "Não foi inserida uma imagem.");
+                //Não foi carregada uma fotografia
+                return View(agente);
+            }
+
+            //Validar que é uma imagem
+
+            //Escolher nome para imagem
+
+            //Formatar tamanho da imagem
+
+            //Guardar imagem
+            
+
+
             if (ModelState.IsValid)
             {
-                db.Agentes.Add(agentes);
+                db.Agentes.Add(agente);
                 db.SaveChanges();
+
+                //Guardar imagem no disco
+
+                carregaFotografia.SaveAs(imagePath);
+
                 return RedirectToAction("Index");
             }
 
-            return View(agentes);
+            return View(agente);
         }
 
         // GET: Agentes/Edit/5

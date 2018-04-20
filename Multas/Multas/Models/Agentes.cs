@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Web;
 
@@ -9,6 +10,7 @@ namespace Multas.Models
     public class Agentes
     {
         [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.None)] //Desactivar o autonumber na base de dados
         public int ID { get; set; }
 
         [Required(ErrorMessage ="O {0} do agente é necessário.")]
@@ -16,7 +18,6 @@ namespace Multas.Models
         [RegularExpression("[A-ZÂÊÎÔÛÁÉÍÓÚ][a-záéíóúàèìòùãõâêîôûç]+(( | e | de | da | das )[A-ZÂÊÎÔÛÁÉÍÓÚ][a-záéíóúàèìòùãõâêîôûç]+){1,3}", ErrorMessage ="Ver regras")]
         public string Nome { get; set; }
 
-        [Required(ErrorMessage = "A {0} do agente é necessária.")]
         public string Fotografia { get; set; }
 
         [Required(ErrorMessage = "Indique a que {0} pertence o agente.")]

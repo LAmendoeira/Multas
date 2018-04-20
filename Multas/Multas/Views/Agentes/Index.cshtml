@@ -1,21 +1,22 @@
 ﻿@model IEnumerable<Multas.Models.Agentes>
 
 @{
-    ViewBag.Title = "Index";
+    ViewBag.Title = "Agentes";
 }
 
-<h2>Index</h2>
+<h2>Lista de agentes no ativo</h2>
 
 <p>
-    @Html.ActionLink("Create New", "Create")
+    @Html.ActionLink("Novo agente", "Create")
 </p>
 <table class="table">
     <tr>
         <th>
-            @Html.DisplayNameFor(model => model.Nome)
+            @Html.DisplayNameFor(model => model.Fotografia)
+            
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.Fotografia)
+            @Html.DisplayNameFor(model => model.Nome)
         </th>
         <th>
             @Html.DisplayNameFor(model => model.Esquadra)
@@ -23,21 +24,24 @@
         <th></th>
     </tr>
 
-@foreach (var item in Model) {
+@foreach (var agente in Model) {
     <tr>
         <td>
-            @Html.DisplayFor(modelItem => item.Nome)
+            <a href="~/imagens/@agente.Fotografia" target="_blank">
+                <img src="~/imagens/@agente.Fotografia" width="50" height="37" />
+            </a>
         </td>
         <td>
-            @Html.DisplayFor(modelItem => item.Fotografia)
+            
+            @Html.DisplayFor(modelItem => agente.Nome)
         </td>
         <td>
-            @Html.DisplayFor(modelItem => item.Esquadra)
+            @Html.DisplayFor(modelItem => agente.Esquadra)
         </td>
         <td>
-            @Html.ActionLink("Edit", "Edit", new { id=item.ID }) |
-            @Html.ActionLink("Details", "Details", new { id=item.ID }) |
-            @Html.ActionLink("Delete", "Delete", new { id=item.ID })
+            @Html.ActionLink("Editar", "Edit", new { id=agente.ID }) |
+            @Html.ActionLink("Detalhes", "Details", new { id=agente.ID }) |
+            @Html.ActionLink("Apagar", "Delete", new { id=agente.ID })
         </td>
     </tr>
 }
