@@ -69,7 +69,8 @@ namespace Multas.Controllers
             {
                 agente.Fotografia = filename;
                 imagePath = Path.Combine(Server.MapPath("~/imagens/"), filename);
-            } else
+            }
+            else
             {
                 //Gerar uma mensagem de erro para que o utilizador saiba o que se passou para a inserção não ter corrido bem
                 ModelState.AddModelError("", "Não foi inserida uma imagem.");
@@ -84,7 +85,7 @@ namespace Multas.Controllers
             //Formatar tamanho da imagem
 
             //Guardar imagem
-            
+
 
 
             if (ModelState.IsValid)
@@ -101,7 +102,8 @@ namespace Multas.Controllers
                     carregaFotografia.SaveAs(imagePath);
 
                     return RedirectToAction("Index");
-                } catch (Exception)
+                }
+                catch (Exception)
                 {
                     ModelState.AddModelError("", "Não foi possivel inserir o Agente " + agente.Nome + ", por favor tente mais tarde ou contacte o Administrador.");
                 }
@@ -161,10 +163,19 @@ namespace Multas.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            Agentes agentes = db.Agentes.Find(id);
-            db.Agentes.Remove(agentes);
-            db.SaveChanges();
-            return RedirectToAction("Index");
+            Agentes agente = db.Agentes.Find(id);
+            try
+            {
+                db.Agentes.Remove(agente);
+                db.SaveChanges();
+                return RedirectToAction("Index");
+            }
+            catch (Exception)
+            {
+                ModelState.AddModelError("", string.Format("A coisa correu mal na eliminação do Agente '{0}', existem multas associadas a ele", agente.Nome));
+            }
+            //Se o fluxo passar por aqui é porque alguma coisa correu mal
+            return View(agente);
         }
 
         protected override void Dispose(bool disposing)

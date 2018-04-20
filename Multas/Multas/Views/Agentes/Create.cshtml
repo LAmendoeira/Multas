@@ -13,6 +13,7 @@
     
     <div class="form-horizontal">
         <hr />
+        @*Painel para apresentar uma lista de erros*@
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
         <div class="form-group">
             @Html.LabelFor(model => model.Nome, htmlAttributes: new { @class = "control-label col-md-2" })
