@@ -63,7 +63,7 @@ namespace Multas.Controllers
                 novoID = db.Agentes.Max(a => a.ID) + 1;
 
             agente.ID = novoID;//Atribuir novo ID ao agente
-            var filename = "Agente_" + novoID + ".jpg";
+            var filename = "Agente_" + novoID + DateTime.Now.ToString("_yyyyMMdd_hhmmss") + ".jpg";
             var imagePath = "";
 
             //Validar se existe imagem
@@ -80,14 +80,12 @@ namespace Multas.Controllers
                 return View(agente);
             }
 
-            //Validar que é uma imagem
-
-            //Escolher nome para imagem
-
-            //Formatar tamanho da imagem
-
-            //Guardar imagem
-
+            //Verificar se o ficheiro carregado é mesmo uma imagem
+            if (!ImagemValida(carregaFotografia))
+            {
+                ModelState.AddModelError("", "O ficheiro fornecido não é uma imagem válida.");
+                return View(agente);
+            }
 
 
             if (ModelState.IsValid)
@@ -136,15 +134,42 @@ namespace Multas.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "ID,Nome,Fotografia,Esquadra")] Agentes agentes)
+        public ActionResult Edit([Bind(Include = "ID,Nome,Fotografia,Esquadra")] Agentes agente, HttpPostedFileBase carregaFotografia)
         {
+
+            string filename = "";
+            string imagePath = "";
+            string oldName = "";
+            //Verificar se existe uma fotografia
+            if (carregaFotografia != null)//Existe um ficheiro
+            {
+                filename = "agente_" + agente.ID + DateTime.Now.ToString("_yyyyMMdd_hhmmss") + ".jpg";
+                imagePath = Path.Combine(Server.MapPath("~/imagens/"), filename);
+                oldName = agente.Fotografia;
+                agente.Fotografia = filename;
+            }
+
             if (ModelState.IsValid)
             {
-                db.Entry(agentes).State = EntityState.Modified;
-                db.SaveChanges();
-                return RedirectToAction("Index");
+                try
+                {
+                    db.Entry(agente).State = EntityState.Modified;
+                    db.SaveChanges();
+                    if (carregaFotografia != null)//Existe um ficheiro
+                    {
+                        System.IO.File.Delete(Path.Combine(Server.MapPath("~/imagens/"), oldName));
+                        carregaFotografia.SaveAs(imagePath);
+                    }
+                    return RedirectToAction("Index");
+                }
+                catch (Exception ex)
+                {
+
+                    ModelState.AddModelError("", "erro");
+                }
+
             }
-            return View(agentes);
+            return View(agente);
         }
 
         // GET: Agentes/Delete/5
@@ -191,6 +216,38 @@ namespace Multas.Controllers
                 db.Dispose();
             }
             base.Dispose(disposing);
+        }
+
+        //Se o ficheiro passado por parametro for uma imagem devolve true
+        public bool ImagemValida(HttpPostedFileBase file)
+        {
+            //verificar a extensão do ficheiro
+            string extension = Path.GetExtension(file.FileName);
+
+            if (!extension.Equals(".jpg"))
+            {
+                return false;
+            }
+
+            try
+            {
+                // Ler bytes do ficheiro fornecido
+                BinaryReader b = new BinaryReader(file.InputStream);
+                byte[] binData = b.ReadBytes(file.ContentLength);
+
+                string byte1 = binData[0].ToString();
+                string byte2 = binData[1].ToString();
+
+                //Os valores do header devem ser FF D8
+                if (byte1 == "255" && byte2 == "216")
+                {
+                    return true;
+                }
+                return false;
+            } catch (Exception ex)
+            {
+                return false;
+            }
         }
     }
 }
