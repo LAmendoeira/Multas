@@ -27,6 +27,12 @@ namespace Multas.Models
         //Lista de multas associadas
         public virtual ICollection<Multas> ListaMultas { get; set; }
 
+
+        //Criar FK virtual para autenticação
+        //[Required]
+        public string UserName { get; set; }
+
+
         public Agentes()
         {
             ListaMultas = new HashSet<Multas>();
