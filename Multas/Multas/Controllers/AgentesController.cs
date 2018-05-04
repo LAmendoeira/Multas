@@ -16,6 +16,7 @@ namespace Multas.Controllers
         private ApplicationDbContext db = new ApplicationDbContext();
 
         // GET: Agentes
+        [Authorize(Roles = "Agentes")]
         public ActionResult Index()
         {
             //SELECT * FROM Agentes ORDER BY Nome
